@@ -1,11 +1,8 @@
 ﻿namespace Cq.Miniserver
 {
     using System;
-    using System.Collections.Generic;
-    using System.IO;
     using System.Net;
     using System.Net.Sockets;
-    using System.Text;
     using System.Threading;
 
     public class Server
@@ -55,9 +52,7 @@
                         if (length > 0)
                         {
                             var request = new Request(buffer, length);
-
                             var response = new Response(request);
-
                             var header = response.Header;
 
                             stream.Write(header, 0, header.Length);

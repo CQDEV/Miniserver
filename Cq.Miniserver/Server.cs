@@ -14,7 +14,7 @@
 
         public Server()
         {
-            this.listener = new TcpListener(IPAddress.Any, 6636);
+            this.listener = new TcpListener(IPAddress.Loopback, 6636);
             this.listener.Start();
 
             this.ProcessLoop();

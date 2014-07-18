@@ -63,9 +63,10 @@
                             }
                         }
                     }
-                    catch
+                    catch (Exception ex)
                     {
                         // 500
+                        Console.WriteLine("Error: {0}\r\n{1}", ex.Message, ex.StackTrace);
                     }
 
                     stream.Dispose();

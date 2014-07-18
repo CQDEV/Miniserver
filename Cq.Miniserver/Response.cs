@@ -7,12 +7,7 @@
 
     public class Response
     {
-        public static Dictionary<string, string> ContentTypeMapping = new Dictionary<string, string> 
-        { 
-            { "html", "text/html" },
-            { "js", "text/javascript" },
-            { "css", "text/css" },
-        };
+        
 
         public static Dictionary<string, byte[]> Cache = new Dictionary<string, byte[]>();
 
@@ -84,9 +79,9 @@
 
             var extension = filePath.Substring(filePath.LastIndexOf('.') + 1);
 
-            if (ContentTypeMapping.ContainsKey(extension))
+            if (Mime.ContentTypeMapping.ContainsKey(extension))
             {
-                this.ContentType = ContentTypeMapping[extension];
+                this.ContentType = Mime.ContentTypeMapping[extension];
             }
 
             this.Content = File.ReadAllBytes(filePath);

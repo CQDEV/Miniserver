@@ -85,7 +85,7 @@
                         if (length > 0)
                         {
                             var request = new Request(requestBuffer, length);
-                            log += string.Format("> {0} ", request.Path);
+                            log += string.Format("> {0} {1} ", request.Method, request.Path);
 
                             var response = new Response(request);
 

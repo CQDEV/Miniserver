@@ -32,7 +32,7 @@
             var headers = Encoding.ASCII.GetString(buffer, 0, i).Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
             var requestLine = headers[0].Split(' ');
 
-            this.Method = requestLine[0];
+            this.Method = requestLine[0].ToLower();
             this.Path = requestLine[1];
             this.Version = requestLine[2];
 

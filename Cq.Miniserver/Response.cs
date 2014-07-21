@@ -10,12 +10,11 @@
         public static Dictionary<string, byte[]> Cache = new Dictionary<string, byte[]>();
 
         public const string Version = "HTTP/1.1";
-        public string StatusCode { get; private set; }
-        public string Status { get; private set; }
+        public string StatusCode { get; set; }
+        public string Status { get; set; }
 
-        public string ContentType { get; private set; }
-
-        public byte[] Content { get; private set; }
+        public string ContentType { get; set; }
+        public byte[] Content { get; set; }
 
         public string ContentLength
         {
@@ -62,7 +61,8 @@
 
             if (path.ToLower().StartsWith("/$"))
             {
-                // process service here & return
+                ServiceCall.Process(request, this);
+                
                 return;
             }
 
@@ -103,7 +103,7 @@
             this.ContentType = null;
         }
 
-        private void ErrorApplication()
+        public void ErrorApplication()
         {
             this.StatusCode = "500";
             this.Status = "Application error.";

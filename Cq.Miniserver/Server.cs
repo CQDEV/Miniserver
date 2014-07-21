@@ -1,6 +1,8 @@
 ﻿namespace Cq.Miniserver
 {
     using System;
+    using System.Collections.Generic;
+    using System.IO;
     using System.Net;
     using System.Net.Sockets;
     using System.Threading;
@@ -9,12 +11,34 @@
     {
         private TcpListener listener;
 
+        private Queue<string> logQueue;
+
         public Server()
         {
             this.listener = new TcpListener(IPAddress.Loopback, 6636);
+            this.logQueue = new Queue<string>();
+
             this.listener.Start();
 
             this.ProcessLoop();
+            this.ProcessLog();
+        }
+
+        private void ProcessLog()
+        {
+            ThreadPool.QueueUserWorkItem(
+                delegate
+                {
+                    while (true)
+                    {
+                        if (this.logQueue.Count > 0)
+                        {
+                            Console.WriteLine(this.logQueue.Dequeue());
+                        }
+
+                        Thread.Sleep(100);
+                    }
+                });
         }
 
         private void ProcessLoop()
@@ -22,14 +46,21 @@
             ThreadPool.QueueUserWorkItem(
                 delegate
                 {
-                    while (true)
+                    try
                     {
-                        this.ProcessClient(this.listener.AcceptTcpClient());
+                        while (true)
+                        {
+                            this.ProcessClient(this.listener.AcceptTcpClient());
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("[{0}] {1}", DateTime.Now.ToLongTimeString(), ex.Message);
                     }
                 });
         }
 
-        private const int BufferSize = 1024 * 1024;
+        private const int RequestBufferSize = 1024 * 1024;
 
         private void ProcessClient(TcpClient client)
         {
@@ -38,39 +69,58 @@
                 {
                     var stream = client.GetStream();
 
+                    var log = string.Format("[{0}] ", DateTime.Now.ToLongTimeString());
+
                     try
                     {
-                        var buffer = new byte[BufferSize];
-                        var length = stream.Read(buffer, 0, BufferSize);
+                        var requestBuffer = new byte[RequestBufferSize];
+                        var length = stream.Read(requestBuffer, 0, RequestBufferSize);
 
-                        if (length == BufferSize)
+                        if (length == RequestBufferSize)
                         {
                             Console.WriteLine("Request too big");
-                            // 500? 
+                            this.SendResponse(stream, Response.GetErrorResponse());
                         }
 
                         if (length > 0)
                         {
-                            var request = new Request(buffer, length);
+                            var request = new Request(requestBuffer, length);
+                            log += string.Format("> {0} ", request.Path);
+
                             var response = new Response(request);
-                            var header = response.Header;
 
-                            stream.Write(header, 0, header.Length);
+                            log += string.Format("< {0} {1} {2}", response.StatusCode, response.ContentType, response.ContentLength);
 
-                            if (response.Content != null)
-                            {
-                                stream.Write(response.Content, 0, response.Content.Length);
-                            }
+                            this.SendResponse(stream, response);
+                        }
+                        else
+                        {
+                            log += "Empty request";
+                            this.SendResponse(stream, Response.GetErrorResponse());
                         }
                     }
                     catch (Exception ex)
                     {
-                        // 500
-                        Console.WriteLine("Error: {0}\r\n{1}", ex.Message, ex.StackTrace);
+                        this.SendResponse(stream, Response.GetErrorResponse());
+                        Console.WriteLine("Error: {0}", ex.Message);
                     }
+
+                    this.logQueue.Enqueue(log);
 
                     stream.Dispose();
                 });
+        }
+
+        private void SendResponse(Stream stream, Response response)
+        {
+            var header = response.Header;
+
+            stream.Write(header, 0, header.Length);
+
+            if (response.Content != null)
+            {
+                stream.Write(response.Content, 0, response.Content.Length);
+            }
         }
     }
 }

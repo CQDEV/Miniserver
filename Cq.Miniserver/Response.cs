@@ -7,8 +7,6 @@
 
     public class Response
     {
-        
-
         public static Dictionary<string, byte[]> Cache = new Dictionary<string, byte[]>();
 
         public const string Version = "HTTP/1.1";
@@ -46,13 +44,21 @@
             }
         }
 
+        private Response()
+        {
+        }
+
+        private Response(string statusCode, string status)
+            : this()
+        {
+            this.StatusCode = statusCode;
+            this.Status = status;
+        }
+
         public Response(Request request)
+            : this("200", "OK")
         {
             var path = request.Path;
-
-            this.StatusCode = "200";
-            this.Status = "OK";
-            this.ContentType = "application/octet-stream";
 
             if (path.ToLower().StartsWith("/$"))
             {
@@ -72,19 +78,45 @@
 
             if (!File.Exists(filePath))
             {
-                this.StatusCode = "404";
-                this.Status = "Not found.";
+                this.ErrorNotFound();
                 return;
             }
 
             var extension = filePath.Substring(filePath.LastIndexOf('.') + 1);
 
-            if (Mime.ContentTypeMapping.ContainsKey(extension))
+            if (!Mime.ContentTypeMapping.ContainsKey(extension))
             {
-                this.ContentType = Mime.ContentTypeMapping[extension];
+                this.ErrorApplication();
+                return;
             }
 
+            this.ContentType = Mime.ContentTypeMapping[extension];
+
             this.Content = File.ReadAllBytes(filePath);
+        }
+
+        private void ErrorNotFound()
+        {
+            this.StatusCode = "404";
+            this.Status = "Not found.";
+            this.Content = null;
+            this.ContentType = null;
+        }
+
+        private void ErrorApplication()
+        {
+            this.StatusCode = "500";
+            this.Status = "Application error.";
+            this.Content = null;
+            this.ContentType = null;
+        }
+
+        public static Response GetErrorResponse()
+        {
+            var response = new Response();
+            response.ErrorApplication();
+
+            return response;
         }
     }
 }

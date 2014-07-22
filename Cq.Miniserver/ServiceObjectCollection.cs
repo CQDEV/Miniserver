@@ -5,19 +5,70 @@
 
     public class ServiceObjectCollection : List<ServiceObject>
     {
-        public int Add(string data)
+        public static object Lock = new object();
+
+        private ServiceObject GetItemByContainerAndId(string container, ulong id)
         {
-            var id = 1;
+            return this.FirstOrDefault(x => x.Container == container && x.Id == id);
+        }
 
-            if (this.Count > 0)
+        public ulong Create(string container, string data)
+        {
+            lock (Lock)
             {
-                id = this.Max(x => x.Id) + 1;
+                var items = this.Where(x => x.Container == container);
+                var index = 1UL;
+
+                if (items.Count() > 0)
+                {
+                    index = items.Max(x => x.Id) + 1;
+                }
+
+                this.Add(new ServiceObject 
+                {
+                    Container = container,
+                    Id = index,
+                    Data = data
+                });
+
+                return index;
             }
+        }
 
+        public IEnumerable<ServiceObject> Query(string container)
+        {
+            return this.Where(x => x.Container == container);
+        }
 
-            this.Add(new ServiceObject { Id = id, Data = data });
+        public ServiceObject Read(string container, ulong id)
+        {
+            return this.GetItemByContainerAndId(container, id);
+        }
 
-            return id;
+        public void Update(string container, ulong id, string data)
+        {
+            lock (Lock)
+            {
+                var item = this.GetItemByContainerAndId(container, id);
+
+                if (item != null)
+                {
+                    item.Data = data;
+                }
+            }
+        }
+
+        public void Delete(string container, ulong id)
+        {
+            lock (Lock)
+            {
+                var item = this.GetItemByContainerAndId(container, id);
+
+                if (item != null)
+                {
+                    this.Remove(item);
+                }
+            }
         }
     }
 }

@@ -2,7 +2,8 @@
 {
     public class ServiceObject
     {
-        public int Id { get; set; }
+        public string Container { get; set; }
+        public ulong Id { get; set; }
         public string Data { get; set; }
     }
 }

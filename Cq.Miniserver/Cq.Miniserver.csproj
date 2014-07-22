@@ -49,8 +49,6 @@
     <Compile Include="Response.cs" />
     <Compile Include="Server.cs" />
     <Compile Include="ServiceCall.cs" />
-    <Compile Include="ServiceObjectCollectionContainerCollection.cs" />
-    <Compile Include="ServiceObjectCollectionContainer.cs" />
     <Compile Include="ServiceObjectCollection.cs" />
     <Compile Include="ServiceObject.cs" />
   </ItemGroup>

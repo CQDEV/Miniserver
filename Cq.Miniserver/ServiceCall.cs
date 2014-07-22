@@ -5,6 +5,8 @@
 
     public class ServiceCall
     {
+        public static ServiceObjectCollection Objects = new ServiceObjectCollection();
+
         public static void Process(Request request, Response response)
         {
             // process request
@@ -17,7 +19,7 @@
                 return;
             }
 
-            // pathSplit[1]
+            var container = pathSplit[1].ToLower();
 
             var item = string.Empty;
 
@@ -32,9 +34,9 @@
             // create
             if (request.Method == "post")
             {
-                //var id = container.Objects.Add(Encoding.ASCII.GetString(request.Content));
+                var id = Objects.Create(container, Encoding.ASCII.GetString(request.Content));
 
-                //response.Content = Encoding.ASCII.GetBytes("{" + "\"id\":\"" + id + "\"}");
+                response.Content = Encoding.ASCII.GetBytes("{" + "\"id\":\"" + id + "\"}");
 
                 return;
             }

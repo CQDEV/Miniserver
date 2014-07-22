@@ -101,7 +101,12 @@
                     }
                     catch (Exception ex)
                     {
-                        this.SendResponse(stream, Response.GetErrorResponse());
+                        try
+                        {
+                            this.SendResponse(stream, Response.GetErrorResponse());
+                        }
+                        catch { }
+
                         Console.WriteLine("Error: {0}", ex.Message);
                     }
 

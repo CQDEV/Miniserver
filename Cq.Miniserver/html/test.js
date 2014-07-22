@@ -1,11 +1,29 @@
 ﻿(function () {
-    minidata.create('testCollection', { key: 'a', value: 1 });
+    var collectionName = 'testCollection';
 
-    minidata.query('testCollection');
+    minidata.create(collectionName, { key: 'a', value: 1, date: new Date() }, function (a, b, c) {
+        var id = a.id;
 
-    minidata.read('testCollection', '1');
-    
-    minidata.update('testCollection', '1', { key: 'a', value: 100 });
+        debugger;
 
-    minidata.delete('testCollection', '1');
+        minidata.query(collectionName, function (a, b, c) {
+            debugger;
+
+            minidata.read(collectionName, id, function (a, b, c) {
+                debugger;
+
+                minidata.update(collectionName, id, { key: 'abc', value: 123, date: new Date() }, function (a, b, c) {
+                    debugger;
+
+                    minidata.read(collectionName, id, function (a, b, c) {
+                        debugger;
+
+                        minidata.delete(collectionName, id, function (a, b, c) {
+                            debugger;
+                        });
+                    });
+                });
+            });
+        });
+    });
 })();

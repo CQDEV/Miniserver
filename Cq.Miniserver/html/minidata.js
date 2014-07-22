@@ -2,17 +2,23 @@
     window.minidata = new function () {
         var self = this;
 
+        self.error = function (a, b, c) {
+            debugger;
+        };
+
         self.query = function (collection, callback) {
             $.ajax({
                 url: '/$/' + collection,
-                success: callback
+                success: callback,
+                error: self.error
             });
         };
 
         self.read = function (collection, id, callback) {
             $.ajax({
                 url: '/$/' + collection + '/' + id,
-                success: callback
+                success: callback,
+                error: self.error
             });
         };
 
@@ -21,7 +27,8 @@
                 url: '/$/' + collection,
                 data: JSON.stringify(data),
                 method: 'post',
-                success: callback
+                success: callback,
+                error: self.error
             });
         };
 
@@ -30,7 +37,8 @@
                 url: '/$/' + collection + '/' + id,
                 data: JSON.stringify(data),
                 method: 'put',
-                success: callback
+                success: callback,
+                error: self.error
             });
         };
 
@@ -38,7 +46,8 @@
             $.ajax({
                 url: '/$/' + collection + '/' + id,
                 method: 'delete',
-                success: callback
+                success: callback,
+                error: self.error
             });
         };
     };

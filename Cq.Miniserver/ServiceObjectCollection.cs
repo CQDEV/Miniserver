@@ -24,12 +24,13 @@
                     index = items.Max(x => x.Id) + 1;
                 }
 
-                this.Add(new ServiceObject 
-                {
-                    Container = container,
-                    Id = index,
-                    Data = data
-                });
+                this.Add(
+                    new ServiceObject 
+                    {
+                        Container = container,
+                        Id = index,
+                        Data = data
+                    });
 
                 return index;
             }

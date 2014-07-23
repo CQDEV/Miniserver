@@ -18,6 +18,8 @@
             this.listener = new TcpListener(IPAddress.Loopback, 6636);
             this.logQueue = new Queue<string>();
 
+            Console.WriteLine("Service started: {0}", this.listener.LocalEndpoint.ToString());
+
             this.listener.Start();
 
             this.ProcessLoop();

@@ -86,6 +86,7 @@
                 return;
             }
 
+            // if no id has been provided then the calls below are not going to work...
             if (string.IsNullOrEmpty(id))
             {
                 response.ErrorApplication();

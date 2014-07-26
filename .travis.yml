@@ -1,8 +1,15 @@
-## Travis CI Integration
-
 language: c
-
 install:
-  - sudo apt-get install mono-devel mono-gmcs
+- sudo apt-get install mono-devel mono-gmcs
 script:
-  - xbuild Cq.Miniserver.sln
+- xbuild Cq.Miniserver.sln
+deploy:
+  provider: releases
+  api_key:
+    secure: g7IsJjRG4gzcdLYAuCIo7VgqJJj6fopqmR5fOWkIElxj9JhNwT10WhIOq/HVnCY4+cp8+lvEVLU1bXYFJ2DNB+e1vBAm567T7cSy1DeK/osPY+v0KpY4ynNFzNAukQU+LDlgpQBy5WBh7SAD7QWuUipfzr6tKTYK9pavieWNGtA=
+  file: ./Cq.Miniserver/bin/Debug/*
+  skip_cleanup: true
+  on:
+    repo: CQDEV/Miniserver
+	tags: true
+    all_branches: true

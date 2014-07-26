@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Configuration;
     using System.IO;
     using System.Net;
     using System.Net.Sockets;
@@ -15,7 +16,10 @@
 
         public Server()
         {
-            this.listener = new TcpListener(IPAddress.Loopback, 6636);
+            this.listener = new TcpListener(
+                IPAddress.Parse(ConfigurationManager.AppSettings["ip"]),
+                int.Parse(ConfigurationManager.AppSettings["port"]));
+
             this.logQueue = new Queue<string>();
 
             Console.WriteLine("Service started: {0}", this.listener.LocalEndpoint);

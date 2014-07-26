@@ -11,5 +11,5 @@ deploy:
  skip_cleanup: true
  on:
   repo: CQDEV/Miniserver
-  tags: false
+  tags: true
   all_branches: true

@@ -6,6 +6,8 @@
     using System.IO;
     using System.Net;
     using System.Net.Sockets;
+    using System.Runtime.Serialization;
+    using System.Text;
     using System.Threading;
 
     public class Server
@@ -13,6 +15,16 @@
         private TcpListener listener;
 
         private Queue<string> logQueue;
+
+        private DataContractSerializer serializer;
+
+        protected DataContractSerializer Serializer
+        {
+            get
+            {
+                return this.serializer ?? (this.serializer = new DataContractSerializer(typeof(ServiceObjectCollection)));
+            }
+        }
 
         public Server()
         {
@@ -22,12 +34,46 @@
 
             this.logQueue = new Queue<string>();
 
+            if (File.Exists("data.xml"))
+            {
+                using (var stream = File.OpenRead("data.xml"))
+                {
+                    ServiceCall.Objects = (ServiceObjectCollection)this.Serializer.ReadObject(stream);
+                }
+            }
+
             Console.WriteLine("Service started: {0}", this.listener.LocalEndpoint);
 
             this.listener.Start();
 
             this.ProcessLoop();
             this.ProcessLog();
+            this.ProcessStorage();
+        }
+
+        private void ProcessStorage()
+        {
+            ThreadPool.QueueUserWorkItem(
+                delegate
+                {
+                    while (true)
+                    {
+                        this.logQueue.Enqueue(string.Format("[{0}] Storing", DateTime.Now.ToLongTimeString()));
+
+                        lock (ServiceObjectCollection.Lock)
+                        {
+                            using (var stream = new MemoryStream())
+                            {
+                                this.Serializer.WriteObject(stream, ServiceCall.Objects);
+                                stream.Flush();
+
+                                File.WriteAllBytes("data.xml", stream.ToArray());
+                            }
+                        }
+
+                        Thread.Sleep(10000);
+                    }
+                });
         }
 
         private void ProcessLog()

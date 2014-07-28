@@ -12,3 +12,4 @@ deploy:
   bucket: cqdev-miniserver
   on:
     repo: CQDEV/Miniserver
+  skip_cleanup: true

@@ -4,6 +4,7 @@ install:
 script:
 - xbuild Cq.Miniserver.sln
 deploy:
+  local-dir: Cq.Miniserver/bin/Debug
   provider: s3
   access_key_id: AKIAIKHREYNWPLHD7LQQ
   secret_access_key:

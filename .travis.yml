@@ -10,7 +10,5 @@ deploy:
   secret_access_key:
     secure: dTS0qw3BeP9MGZFkwFLCTz5jAMcO9FDO1f3+Tyqh2YrFMtsOs7yE3c+zUpgqHSrbWWE/SMRMxUHv2rEVr9XfTRP29mpZ8bQKqqIP1sCbmPQc0HtaDkbpXspycwKyRfTMRZRJJxLCJv+B/tjtmjYvBQi2xAEoUCSbx5hrR4QAreQ=
   bucket: cqdev-miniserver
-  acl: !ruby/string:HighLine::String |-
-    cHJpdmF0ZQ==
   on:
     repo: CQDEV/Miniserver

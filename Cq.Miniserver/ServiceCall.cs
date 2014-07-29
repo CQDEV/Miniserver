@@ -1,6 +1,7 @@
 ﻿namespace Cq.Miniserver
 {
     using System;
+    using System.Linq;
     using System.Collections.Generic;
     using System.Text;
 
@@ -10,6 +11,11 @@
 
         public static string GetJson(IEnumerable<ServiceObject> data)
         {
+             if (data.Count() == 0)
+             {
+                 return "[]";
+             }
+
             var builder = new StringBuilder();
             builder.Append("[");
 

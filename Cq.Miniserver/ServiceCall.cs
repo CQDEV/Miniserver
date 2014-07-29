@@ -6,7 +6,7 @@
 
     public class ServiceCall
     {
-        public static ServiceObjectCollection Objects = new ServiceObjectCollection();
+        public static ServiceObjectCollection Objects = ServiceObjectCollection.Get();
 
         public static string GetJson(IEnumerable<ServiceObject> data)
         {

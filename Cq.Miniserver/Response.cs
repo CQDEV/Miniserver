@@ -1,5 +1,6 @@
 ﻿namespace Cq.Miniserver
 {
+    using System;
     using System.Collections.Generic;
     using System.Configuration;
     using System.IO;
@@ -7,6 +8,22 @@
 
     public class Response
     {
+        private bool? isWindows;
+        protected bool IsWindows
+        {
+            get
+            {
+                if (!this.isWindows.HasValue)
+                {
+                    var platform = Environment.OSVersion.Platform;
+
+                    this.isWindows = platform != PlatformID.MacOSX && platform != PlatformID.Unix;
+                }
+
+                return this.isWindows.Value;
+            }
+        }
+
         public static Dictionary<string, byte[]> Cache = new Dictionary<string, byte[]>();
 
         public const string Version = "HTTP/1.1";
@@ -66,7 +83,7 @@
             if (path.ToLower().StartsWith("/$"))
             {
                 ServiceCall.Process(request, this);
-                
+
                 return;
             }
 
@@ -77,10 +94,12 @@
                 path = "/index.html";
             }
 
-            var filePath = string.Format(
-                "{0}{1}",
-                ConfigurationManager.AppSettings["root"],
-                path.Replace('/', '\\')).ToLower();
+            var filePath = string.Format("{0}{1}", ConfigurationManager.AppSettings["root"], path).ToLower();
+
+            if (this.IsWindows)
+            {
+                filePath.Replace('/', '\\');
+            }
 
             if (!File.Exists(filePath))
             {

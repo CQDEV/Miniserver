@@ -29,6 +29,8 @@
             }
         }
 
+        public int CacheTime { get; set; }
+
         public byte[] Header
         {
             get
@@ -37,7 +39,9 @@
 
                 builder.AppendLine(string.Format("{0} {1} {2}", Version, this.StatusCode, this.Status));
                 builder.AppendFormat("content-type: {0}\r\n", this.ContentType);
-                builder.AppendFormat("content-length: {0}\r\n\r\n", this.ContentLength);
+                builder.AppendFormat("content-length: {0}\r\n", this.ContentLength);
+                builder.AppendFormat("cache-control: max-age={0}\r\n", this.CacheTime);
+                builder.Append("server: Cq.Miniserver/1.0\r\n\r\n");
 
                 return Encoding.ASCII.GetBytes(builder.ToString());
             }
@@ -65,6 +69,8 @@
                 
                 return;
             }
+
+            this.CacheTime = 86400;
 
             if (path == "/")
             {

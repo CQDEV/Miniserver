@@ -10,7 +10,12 @@
         {
             get
             {
-                var result = string.Format("\"id\":\"{0}\",\"data\":{1}", Id, Data);
+                if (string.IsNullOrWhiteSpace(this.Data))
+                {
+                    this.Data = "{}";
+                }
+
+                var result = string.Format("\"id\":\"{0}\",\"data\":{1}", this.Id, this.Data);
 
                 return "{" + result + "}";
             }
